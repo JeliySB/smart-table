@@ -1,10 +1,7 @@
 
 export function initData() {
     const BASE_URL = 'https://webinars.webdev.education-services.ru/sp7-api';
-    let sellers;
-    let customers;
-    let lastResult;
-    let lastQuery;
+    let sellers, customers, lastResult, lastQuery;
 
     const mapRecords = (data) => data.map(item => ({
         id: item.receipt_id,
@@ -33,10 +30,7 @@ export function initData() {
         const response = await fetch(`${BASE_URL}/records?${nextQuery}`);
         const records = await response.json();
         lastQuery = nextQuery;
-        lastResult = {
-            total: records.total,
-            items: mapRecords(records.items)
-        };
+        lastResult = { total: records.total, items: mapRecords(records.items) };
         return lastResult;
     };
 

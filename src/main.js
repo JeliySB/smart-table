@@ -37,7 +37,7 @@ const api = initData();
 
 const { applyFiltering, updateIndexes } = initFiltering(sampleTable.filter.elements);
 
-const applySearching = initSearching(sampleTable.search.elements, 'search');
+const applySearching = initSearching('search');
 
 /**
  * Сбор и обработка полей из таблицы
@@ -47,16 +47,11 @@ function collectState() {
     const state = processFormData(new FormData(sampleTable.container));
     const rowsPerPage = parseInt(state.rowsPerPage);
     const page = parseInt(state.page ?? 1);
-    return {
-        ...state,
-        rowsPerPage,
-        page
-    };
+    return { ...state, rowsPerPage, page };
 }
 
 /**
- * Перерисовка состояния таблицы при любых изменениях
- * @param {HTMLButtonElement?} action
+ Перерисовка состояния таблицы при любых изменениях
  */
 async function render(action) {
     let state = collectState();
@@ -65,13 +60,15 @@ async function render(action) {
     query = applyFiltering(query, state, action);
     query = applySearching(query, state);
     query = applySorting(query, state, action);
-    const { total, items } = await api.getRecords(query);
+    const isUpdated = !!query.search || !!query.sort;
+    const { total, items } = await api.getRecords(query, isUpdated);
     updatePagination(total, query);
     sampleTable.render(items);
 }
 
 /**
- * Инициализация данных */
+ * Инициализация данных
+ */
 async function init() {
     const indexes = await api.getIndexes();
     updateIndexes(sampleTable.filter.elements, { searchBySeller: indexes.sellers });
